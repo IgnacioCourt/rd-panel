@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruta para Dani — bici de ruta Perth/Margaret River</title>
+<style>
+:root{
+  --bg:#faf7f2;
+  --surface:#ffffff;
+  --surface-2:#f2ede4;
+  --ink:#2b2620;
+  --ink-soft:#5c554a;
+  --muted:#9a9184;
+  --line:#e5ddd0;
+  --accent:#c1502c;
+  --accent-ink:#ffffff;
+  --accent2:#1f6f6b;
+  --good:#3a7d44;
+  --warn:#b6842a;
+  --shadow: 0 1px 2px rgba(43,38,32,.06), 0 8px 24px -12px rgba(43,38,32,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1712; --surface:#242019; --surface-2:#2c261e; --ink:#f1ece2; --ink-soft:#c9bfae;
+    --muted:#8a8072; --line:#3a3327; --accent:#e37350; --accent-ink:#241206; --accent2:#4fada7;
+    --good:#6cbf76; --warn:#d9a441; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1712; --surface:#242019; --surface-2:#2c261e; --ink:#f1ece2; --ink-soft:#c9bfae;
+  --muted:#8a8072; --line:#3a3327; --accent:#e37350; --accent-ink:#241206; --accent2:#4fada7;
+  --good:#6cbf76; --warn:#d9a441; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Public Sans',system-ui,-apple-system,Segoe UI,sans-serif;
+  padding-inline:20px;
+  padding-block:28px 60px;
+}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif; text-wrap:balance; margin:0;}
+.wrap{max-width:1080px; margin:0 auto; display:flex; flex-direction:column; gap:28px;}
+header{display:flex; flex-direction:column; gap:10px;}
+.eyebrow{font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent2); font-weight:700;}
+header h1{font-size:clamp(28px,4vw,40px); font-weight:600; color:var(--ink);}
+header p{margin:0; color:var(--ink-soft); font-size:15px; max-width:65ch; line-height:1.55;}
+.note{background:var(--surface-2); border:1px solid var(--line); border-left:4px solid var(--warn); border-radius:10px; padding:14px 16px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;}
+.note strong{color:var(--ink);}
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;}
+.stat{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px; box-shadow:var(--shadow);}
+.stat .num{font-family:'Fraunces',serif; font-size:28px; font-weight:600; font-variant-numeric:tabular-nums; color:var(--accent);}
+.stat .lbl{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:2px;}
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; box-shadow:var(--shadow); position:sticky; top:0; z-index:5;}
+.panel h2{font-size:14px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700; margin-bottom:12px;}
+.filter-row{display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start;}
+.filter-group{display:flex; flex-direction:column; gap:8px;}
+.filter-group .fg-label{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:700;}
+.chips{display:flex; flex-wrap:wrap; gap:6px; max-width:340px;}
+.chip{border:1px solid var(--line); background:var(--surface-2); color:var(--ink-soft); padding:6px 12px; border-radius:999px; font-size:13px; cursor:pointer; user-select:none; transition:background .15s,color .15s,border-color .15s;}
+.chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:600;}
+.chip:focus-visible{outline:2px solid var(--accent2); outline-offset:2px;}
+.range-wrap{display:flex; align-items:center; gap:8px; font-variant-numeric:tabular-nums; font-size:13px; color:var(--ink-soft);}
+input[type=range]{accent-color:var(--accent); width:150px;}
+.reset-btn{border:1px solid var(--line); background:transparent; color:var(--ink-soft); border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer; align-self:flex-end; margin-left:auto;}
+.reset-btn:hover{border-color:var(--accent); color:var(--accent);}
+.count-line{font-size:13px; color:var(--muted); margin-top:12px;}
+#cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px;}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:10px; box-shadow:var(--shadow);}
+.card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+.card-top h3{font-size:18px; font-weight:600; line-height:1.25;}
+.card-top .brand{font-size:12px; color:var(--accent2); font-weight:700; text-transform:uppercase; letter-spacing:.04em;}
+.score{display:flex; flex-direction:column; align-items:center; flex-shrink:0;}
+.score .stars{color:var(--accent); font-size:15px; letter-spacing:1px;}
+.score .stars .dim{color:var(--line);}
+.score .sub{font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;}
+.badges{display:flex; flex-wrap:wrap; gap:6px;}
+.badge{font-size:11px; padding:3px 9px; border-radius:999px; font-weight:600; letter-spacing:.02em;}
+.badge.geo-endurance{background:rgba(31,111,107,.14); color:var(--accent2);}
+.badge.geo-race{background:rgba(193,80,44,.14); color:var(--accent);}
+.badge.mat{background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--line);}
+.price{font-family:'Fraunces',serif; font-size:22px; font-weight:600; font-variant-numeric:tabular-nums;}
+.price small{font-family:'Public Sans',sans-serif; font-size:11px; color:var(--muted); font-weight:400; display:block; text-transform:uppercase; letter-spacing:.04em;}
+.card p.why{font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:0;}
+.fit-row{font-size:12.5px; color:var(--muted); display:flex; justify-content:space-between; border-top:1px dashed var(--line); padding-top:10px; margin-top:2px;}
+.links{display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;}
+.links a{font-size:12px; text-decoration:none; color:var(--accent2); border:1px solid var(--line); padding:5px 10px; border-radius:8px; background:var(--surface-2);}
+.links a:hover{border-color:var(--accent2);}
+.empty{padding:40px; text-align:center; color:var(--muted); font-size:14px;}
+.sources{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;}
+.source-card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px 16px; box-shadow:var(--shadow);}
+.source-card .sc-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
+.source-card .sc-name{font-weight:700; font-size:14px;}
+.source-card .sc-tag{font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; padding:2px 8px; border-radius:999px; background:var(--surface-2); color:var(--muted);}
+.source-card ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:5px;}
+.source-card a{color:var(--accent2); text-decoration:none; font-size:13px;}
+.source-card a:hover{text-decoration:underline;}
+.callout{background:linear-gradient(135deg,var(--accent2),#2d6b62); color:#fff; border-radius:16px; padding:22px 24px; display:flex; flex-direction:column; gap:10px;}
+.callout h2{font-family:'Fraunces',serif; font-size:20px; color:#fff;}
+.callout p{margin:0; font-size:14px; line-height:1.6; opacity:.95;}
+.callout ul{margin:0; padding-left:18px; font-size:13.5px; line-height:1.7; opacity:.95;}
+footer{font-size:12px; color:var(--muted); text-align:center; padding-top:10px;}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Public+Sans:wght@400;500;600;700&display=swap">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Dani · bici de ruta · Perth / Margaret River</div>
+    <h1>De Perth al Lago Ranco</h1>
+    <p>Guía curada para elegir la primera bici de ruta pensando en dos metas: sostener horas de entrenamiento cómodas como principiante y llegar lista al Ironman 70.3 y a la Vuelta al Lago Ranco. Abajo están los avisos publicados hoy en Perth, Bunbury y Margaret River, con precio, talla, tipo de freno, antigüedad y enlace directo. Para 90 km de bici con bajadas, el freno de disco es la diferencia que más se nota: cuatro de estos lo tienen.</p>
+  </header>
+
+  <div class="note">
+    <strong>Estos son avisos reales, capturados el 18 de septiembre de 2026.</strong> Cada tarjeta es una publicación que estaba vigente ese día en Gumtree o Facebook Marketplace, con precio pedido, comuna, días publicada, tipo de freno y enlace directo. Ya no hay rangos estimados de mercado. Tres advertencias: los avisos se caen sin aviso, así que confirma disponibilidad antes de viajar; cuando el aviso no declara el año o el freno, acá tampoco se inventa y aparece como "por confirmar"; y varias bicis están publicadas en las dos plataformas a <strong>precios distintos</strong> — la tarjeta apunta siempre al más barato y lo dice en el texto.
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="num" id="statCount">12</div><div class="lbl">Avisos vigentes</div></div>
+    <div class="stat"><div class="num">4</div><div class="lbl">Con freno de disco</div></div>
+    <div class="stat"><div class="num">4</div><div class="lbl">Con bajada de precio</div></div>
+    <div class="stat"><div class="num">$780–2.5k</div><div class="lbl">Precios pedidos (AUD)</div></div>
+    <div class="stat"><div class="num">18-09</div><div class="lbl">Última captura</div></div>
+  </div>
+
+  <div class="panel">
+    <h2>Filtros acumulables</h2>
+    <div class="filter-row">
+      <div class="filter-group">
+        <span class="fg-label">Marca</span>
+        <div class="chips" id="brandChips"></div>
+      </div>
+      <div class="filter-group">
+        <span class="fg-label">Material de cuadro</span>
+        <div class="chips" id="matChips"></div>
+      </div>
+      <div class="filter-group">
+        <span class="fg-label">Geometría</span>
+        <div class="chips" id="geoChips"></div>
+      </div>
+      <div class="filter-group">
+        <span class="fg-label">Frenos</span>
+        <div class="chips" id="frenoChips"></div>
+      </div>
+      <div class="filter-group">
+        <span class="fg-label">Precio máx. (AUD, pedido)</span>
+        <div class="range-wrap">
+          <input type="range" id="priceRange" min="700" max="2500" step="50" value="2500">
+          <span id="priceLabel">$2.500</span>
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="fg-label">Publicado hace máx.</span>
+        <div class="range-wrap">
+          <input type="range" id="daysRange" min="1" max="25" step="1" value="25">
+          <span id="daysLabel">25 días</span>
+        </div>
+      </div>
+      <button class="reset-btn" id="resetBtn">Limpiar filtros</button>
+    </div>
+    <div class="count-line" id="countLine"></div>
+  </div>
+
+  <div id="cards"></div>
+
+  <div class="callout">
+    <h2>Cómo entrenar con esta bici: 70.3 + Vuelta al Lago Ranco</h2>
+    <p>Para alguien recién empezando en ruta, la geometría "endurance" (Domane, Allez, Defy/Contend, Synapse, Roubaix) es más importante que el peso: postura más erguida, mayor estabilidad y menos carga lumbar en salidas largas — justo lo que exige el sector bici de un 70.3 (90 km) y una vuelta de fondo como la del Lago Ranco.</p>
+    <ul>
+      <li><strong>Frenos de disco</strong> si el presupuesto alcanza: más control en bajadas y con lluvia (útil en Margaret River en invierno).</li>
+      <li><strong>Plato compacto 50/34 + cassette 11-32/34</strong>: relación de cambios que perdona en las subidas mientras se construye base aeróbica.</li>
+      <li><strong>Talla S o S/M</strong>: pide siempre el geometry chart de cada marca antes de comprar — "S" en Specialized (52 cm) no es igual a "S" en Giant.</li>
+      <li><strong>Progresión sugerida</strong>: 8–10 semanas de base en la bici elegida antes de sumar bloques específicos de bricks (correr después de rodar) para el 70.3.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2 style="font-size:20px; margin-bottom:12px;">Dónde buscar publicaciones reales ahora</h2>
+    <div class="sources" id="sources"></div>
+  </section>
+
+  <footer>Guía generada como referencia de compra — confirma siempre talla, año y estado directamente con el vendedor antes de transferir dinero.</footer>
+</div>
+
+<script>
+const bikes = [
+  {brand:"Bianchi", model:"Via Nirone 7 Disc (52 cm)", years:"comprada nueva en 2024", material:"Aluminio/carbono", geo:"endurance",
+   frenos:"Disco hidráulico", precio:1300, precioAntes:null, score:5,
+   talla:"52 cm · M", comuna:"Maylands, WA", fuente:"Gumtree", dias:17,
+   urlAviso:"https://www.gumtree.com.au/web/listing/men-s-bicycles/1344317686",
+   why:"La mejor del listado y la única con la transmisión de generación actual: Shimano 105 R7100 2×12 con <strong>frenos de disco hidráulicos</strong> y horquilla de carbono. Se compró nueva en septiembre de 2024 por unos A$3.000 y lleva apenas 1.500 km, con boleta original y servicio recién hecho. El desarrollo es exactamente el que conviene para el 70.3: plato compacto 50/34 con piñón 11-34. Ojo: está cruzada en Facebook a A$1.400, así que <strong>Gumtree es A$100 más barata</strong> — negociar sobre los A$1.300. Trae cubiertas Schwalbe G-One de 35 mm (mixtas); para ruta pura conviene cambiarlas.",
+   sizeFit:"52 cm · orientativa 163–172 cm"},
+
+  {brand:"Trek", model:"Émonda SL 5 (2023, 54 cm)", years:"2023", material:"Carbono", geo:"race",
+   frenos:"Disco hidráulico", precio:2000, precioAntes:null, score:5,
+   talla:"54 cm · M", comuna:"Witchcliffe, WA", fuente:"Gumtree", dias:23,
+   urlAviso:"https://www.gumtree.com.au/web/listing/men-s-bicycles/1340514297",
+   why:"Cuadro de carbono OCLV 500, Shimano 105 2×11 con <strong>disco hidráulico</strong>, 50/34 y piñón 11-30. Comprada nueva a fines de 2023 por A$3.400 y el último año la usaron casi sólo en rodillo, sin caídas y con servicio reciente en tienda. Incluye pedales Ultegra, dos portabidones y el sensor DuoTrap S de velocidad y cadencia. Lo relevante para el viaje: <strong>está en Witchcliffe, a minutos de Margaret River</strong>, no en Perth. Geometría de carrera, más agresiva que una endurance.",
+   sizeFit:"54 cm Trek · orientativa 168–176 cm"},
+
+  {brand:"Giant", model:"Defy Advanced disc (talla M/L)", years:"año no declarado", material:"Carbono", geo:"endurance",
+   frenos:"Disco", precio:1400, precioAntes:1600, score:4,
+   talla:"M/L", comuna:"Perth, WA", fuente:"Facebook + Gumtree", dias:4,
+   urlAviso:"https://www.facebook.com/marketplace/item/1641980554168068/",
+   why:"Defy con <strong>frenos de disco</strong> (juego PR2), cuadro, horquilla y tija de carbono, grupo Shimano 105 y pedales incluidos. Geometría endurance, que es la que mejor aguanta las salidas largas. El vendedor la tiene publicada en las dos plataformas a precios distintos: <strong>A$1.600 en Gumtree y A$1.400 en Facebook</strong>, donde ya la bajó. La talla M/L es la más grande de las tres recomendadas: si Dani es talla S, ésta se descarta sola.",
+   sizeFit:"M/L Giant · orientativa 175–182 cm"},
+
+  {brand:"Norco", model:"Search XR gravel (53 cm)", years:"año no declarado", material:"Por confirmar", geo:"endurance",
+   frenos:"Disco", precio:1250, precioAntes:null, score:3,
+   talla:"53 cm", comuna:"Guildford, WA", fuente:"Gumtree", dias:7,
+   urlAviso:"https://www.gumtree.com.au/web/listing/men-s-bicycles/1344524970",
+   why:"Una gravel con grupo Shimano GRX y <strong>disco</strong>, en 53 cm. No es una bici de ruta pura: la posición es más erguida y las cubiertas más anchas, así que en el sector bici de un 70.3 va a ser algo más lenta. A cambio es la más cómoda y versátil del listado, y para alguien que recién empieza y va a rodar por caminos mixtos alrededor de Margaret River puede ser más usable que una ruta estricta. Vale la pena verla sólo si las tres de arriba no calzan de talla.",
+   sizeFit:"53 cm · orientativa 165–173 cm"},
+
+  {brand:"Focus", model:"Izalco Max 8.9 (talla S)", years:"2023", material:"Carbono", geo:"race",
+   frenos:"Por confirmar", precio:2500, precioAntes:null, score:4,
+   talla:"S", comuna:"Alkimos, WA", fuente:"Facebook Marketplace", dias:2,
+   urlAviso:"https://www.facebook.com/marketplace/item/1014704774921881/",
+   why:"El aviso más alineado con la meta: la dueña mide 160 cm, entrenó y corrió un Ironman 70.3 con esta bici y lleva unos 1.000 km en ruta. Shimano Ultegra, ruedas tubeless, modelo 2023. <strong>El aviso no dice qué frenos trae</strong> — el Izalco Max de esa generación se vendió en versión disco, pero hay que confirmarlo con una foto antes de viajar a verla. Es la más cara del listado y de geometría de carrera.",
+   sizeFit:"S Focus · referencia directa de la vendedora: 160 cm"},
+
+  {brand:"Argon 18", model:"Krypton (talla XS)", years:"año no declarado", material:"Carbono", geo:"endurance",
+   frenos:"Llanta", precio:1350, precioAntes:1450, score:4,
+   talla:"XS", comuna:"Perth, WA", fuente:"Facebook Marketplace", dias:14,
+   urlAviso:"https://www.facebook.com/marketplace/item/1568305141449837/",
+   why:"La mejor opción si Dani resulta ser de talla chica: el Krypton es un cuadro endurance de carbono completo con Shimano Ultegra 11v mecánico, y éste lleva menos de unos cientos de kilómetros desde nuevo — cadena, piñón y pistas de freno casi sin desgaste. El aviso es explícito en que es <strong>freno de llanta</strong>, no disco. Detalle del vendedor a tener en cuenta: para probarla exige dejar el precio completo en efectivo como depósito antes de subirse.",
+   sizeFit:"XS · el aviso indica 150–164 cm"},
+
+  {brand:"Giant", model:"Defy Advanced (talla M, 105)", years:"año no declarado", material:"Carbono", geo:"endurance",
+   frenos:"Llanta", precio:950, precioAntes:1150, score:4,
+   talla:"M", comuna:"Perth, WA", fuente:"Facebook Marketplace", dias:7,
+   urlAviso:"https://www.facebook.com/marketplace/item/1706971630995083/",
+   why:"La mejor relación precio-uso si el presupuesto manda: carbono Giant Advanced, geometría endurance y Shimano 105 con bielas compactas Praxis, más un paquete completo de accesorios — zapatillas Louis Garneau talla 43 con calas, casco, cámaras, bomba y bolso de sillín. Bajó de A$1.150 a A$950. <strong>Su límite es el freno: es de llanta</strong>, con menos control en bajada y bajo lluvia que las tres primeras.",
+   sizeFit:"M Giant · orientativa 168–178 cm"},
+
+  {brand:"Merida", model:"Scultura Juliet (talla S, dama)", years:"año no declarado", material:"Carbono", geo:"race",
+   frenos:"Llanta", precio:995, precioAntes:null, score:4,
+   talla:"S · 50–51 cm", comuna:"South Bunbury, WA", fuente:"Gumtree", dias:15,
+   urlAviso:"https://www.gumtree.com.au/web/listing/women-s-bicycles/1344366649",
+   why:"Cuadro de dama específico, Shimano Ultegra y ruedas Mavic — el mejor grupo del listado bajo los mil dólares. Recién salida de un servicio profesional, con boleta, y sin uso posterior. Frenos de caliper, no de disco. El vendedor admite que la bici presenta su edad, así que el año hay que preguntarlo. Queda en Bunbury, a mitad de camino entre Perth y Margaret River.",
+   sizeFit:"S Merida · cuadro declarado de 50–51 cm"},
+
+  {brand:"Giant", model:"Defy Advanced (talla XS, dama)", years:"año no declarado", material:"Carbono", geo:"endurance",
+   frenos:"Llanta", precio:980, precioAntes:1050, score:4,
+   talla:"XS", comuna:"Subiaco, WA", fuente:"Gumtree + Facebook", dias:1,
+   urlAviso:"https://www.gumtree.com.au/web/listing/women-s-bicycles/1344634744",
+   why:"Publicada por Allan (4,9 con 28 reseñas, cuenta desde 2012) y descrita como usada unas 5 veces, guardada bajo techo. Carbono, Shimano 105 completo, ruedas Giant P-SL1 y sensor RideSense incluido. Está cruzada: Gumtree la pide a A$1.050 y Facebook la bajó a A$980, así que hay que negociar sobre el menor. Freno de llanta.",
+   sizeFit:"XS Giant · el aviso sugiere 155–165 cm"},
+
+  {brand:"Liv", model:"Langma Advanced (talla M, dama)", years:"año no declarado", material:"Carbono", geo:"race",
+   frenos:"Por confirmar", precio:1850, precioAntes:null, score:3,
+   talla:"M", comuna:"Melville, WA", fuente:"Gumtree", dias:12,
+   urlAviso:"https://www.gumtree.com.au/web/listing/men-s-bicycles/1344429389",
+   why:"Liv es la línea de geometría femenina de Giant y la Langma es su bici de ruta de carrera: cuadro, horquilla y tija de carbono, ruedas Giant SR2 preparadas para tubeless, recién servida con transmisión desengrasada, cinta nueva y cubierta delantera nueva. El aviso no menciona el tipo de freno, hay que preguntarlo. El vendedor aclara que es efectivo y retiro en persona, sin ofertas a la baja.",
+   sizeFit:"M Liv · orientativa 166–174 cm"},
+
+  {brand:"Liv", model:"Road Bike (talla S, dama)", years:"año no declarado", material:"Por confirmar", geo:"tbd",
+   frenos:"Por confirmar", precio:950, precioAntes:null, score:3,
+   talla:"S", comuna:"Perth, WA", fuente:"Facebook Marketplace", dias:6,
+   urlAviso:"https://www.facebook.com/marketplace/item/1855463778774087/",
+   why:"Geometría femenina de Giant en talla S, que es la que suele calzar mejor en cuerpos pequeños. El problema es el aviso: dice sólo talla S y buen estado, sin modelo, año, material, grupo ni frenos. Vale la pena escribir para pedir esos datos — si resulta ser una Avail (la endurance de Liv) con disco, sube varios puestos de golpe.",
+   sizeFit:"S Liv · falta confirmar medida de cuadro"},
+
+  {brand:"Giant", model:"Defy carbono (talla M, Tiagra)", years:"año no declarado", material:"Carbono", geo:"endurance",
+   frenos:"Llanta", precio:780, precioAntes:null, score:3,
+   talla:"M", comuna:"Cannington, WA", fuente:"Gumtree", dias:4,
+   urlAviso:"https://www.gumtree.com.au/web/listing/men-s-bicycles/1344574922",
+   why:"La entrada más barata a un Defy de carbono: cuadro y horquilla de carbono con ruteo interno, ruedas y cockpit Giant originales. El grupo es Tiagra, un escalón bajo el 105, y el freno es de llanta. Vendedor Dan, 4,5 con 26 reseñas, ofrece prueba de manejo. Sirve como piso de precio para negociar las otras.",
+   sizeFit:"Talla M declarada, sin medida de cuadro en el aviso"}
+];
+
+const sources = [
+  {name:"Facebook Marketplace", tag:"AU · la más productiva", links:[
+    {label:"Road bikes — Perth", url:"https://www.facebook.com/marketplace/perth/search?query=road%20bike"},
+    {label:"Disc brake road bike — Perth", url:"https://www.facebook.com/marketplace/perth/search?query=disc%20brake%20road%20bike"},
+    {label:"Endurance road bike — Perth", url:"https://www.facebook.com/marketplace/perth/search?query=endurance%20road%20bike"}
+  ]},
+  {name:"Gumtree Australia", tag:"AU · la más detallada", links:[
+    {label:"Road bike — toda WA", url:"https://www.gumtree.com.au/s-bicycles/wa/road+bike/k0c18560l3008845"},
+    {label:"Disc road bike — toda WA", url:"https://www.gumtree.com.au/s-bicycles/wa/disc+road+bike/k0c18560l3008845"},
+    {label:"Shimano 105 disc — toda WA", url:"https://www.gumtree.com.au/s-bicycles/wa/105+disc/k0c18560l3008845"},
+    {label:"Liv (geometría de dama) — WA", url:"https://www.gumtree.com.au/s-bicycles/wa/liv/k0c18560l3008845"}
+  ]},
+  {name:"Pinkbike BuySell", tag:"Internacional · revisar flete", links:[
+    {label:"Road bikes en venta", url:"https://www.pinkbike.com/buysell/list/?category=26"},
+    {label:"Búsqueda: Giant", url:"https://www.pinkbike.com/buysell/list/?region=3&q=Giant&category=26"}
+  ]},
+  {name:"Tiendas locales", tag:"AU · usadas de tienda", links:[
+    {label:"Empire Cycles (Perth)", url:"https://empirecycles.com.au/"},
+    {label:"BikeExchange (nuevas de tienda)", url:"https://www.bikeexchange.com.au/"}
+  ]},
+  {name:"Descartadas el 18-09-2026", tag:"no sirven", links:[
+    {label:"bikesales.com.au — es de motos, no de bicis", url:"https://www.bikesales.com.au/bikes/"},
+    {label:"eBay AU — casi todo del extranjero con flete de A$300+", url:"https://www.ebay.com.au/sch/i.html?_nkw=road+bike"}
+  ]}
+];
+
+const state = { brands:new Set(), materials:new Set(), geos:new Set(), frenos:new Set(), maxPrice:2500, maxDays:25 };
+function uniq(arr){ return [...new Set(arr)]; }
+
+function makeChips(container, values, set){
+  container.innerHTML = "";
+  values.forEach(v=>{
+    const chip = document.createElement("button");
+    chip.className = "chip";
+    chip.type = "button";
+    chip.textContent = v;
+    chip.setAttribute("aria-pressed","false");
+    chip.addEventListener("click", ()=>{
+      const pressed = chip.getAttribute("aria-pressed") === "true";
+      chip.setAttribute("aria-pressed", pressed ? "false":"true");
+      if(pressed){ set.delete(v); } else { set.add(v); }
+      render();
+    });
+    container.appendChild(chip);
+  });
+}
+
+function starString(score){
+  const full = "★".repeat(score);
+  const dim = "<span class='dim'>" + "★".repeat(5-score) + "</span>";
+  return full + dim;
+}
+
+function geoLabel(geo){
+  if(geo === "endurance") return "Endurance · 70.3-friendly";
+  if(geo === "race") return "Geometría carrera";
+  return "Geometría por confirmar";
+}
+
+function geoFilterName(geo){
+  if(geo === "endurance") return "Endurance";
+  if(geo === "race") return "Carrera";
+  return "Por confirmar";
+}
+
+function render(){
+  const filtered = bikes.filter(b=>{
+    if(state.brands.size && !state.brands.has(b.brand)) return false;
+    if(state.materials.size && !state.materials.has(b.material)) return false;
+    if(state.geos.size && !state.geos.has(geoFilterName(b.geo))) return false;
+    if(state.frenos.size && !state.frenos.has(b.frenos)) return false;
+    if(b.precio > state.maxPrice) return false;
+    if(b.dias > state.maxDays) return false;
+    return true;
+  });
+
+  document.getElementById("statCount").textContent = filtered.length;
+  document.getElementById("countLine").textContent = filtered.length + " de " + bikes.length + " avisos cumplen los filtros actuales.";
+
+  const cardsEl = document.getElementById("cards");
+  cardsEl.innerHTML = "";
+  if(!filtered.length){
+    cardsEl.innerHTML = '<div class="empty">Ningún aviso calza con esta combinación de filtros. Prueba ampliar el rango de precio o los días de publicación.</div>';
+    return;
+  }
+  filtered.forEach(b=>{
+    const card = document.createElement("div");
+    card.className = "card";
+    const bajada = b.precioAntes
+      ? `<span class="badge" style="background:#1f7a5a;color:#fff;">Bajó de $${b.precioAntes.toLocaleString()}</span>`
+      : "";
+    card.innerHTML = `
+      <div class="card-top">
+        <div>
+          <div class="brand">${b.brand}</div>
+          <h3>${b.model}</h3>
+        </div>
+        <div class="score">
+          <div class="stars">${starString(b.score)}</div>
+          <div class="sub">calidad/precio</div>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="badge ${b.geo === 'endurance' ? 'geo-endurance':'geo-race'}">${geoLabel(b.geo)}</span>
+        <span class="badge mat">${b.material}</span>
+        <span class="badge mat">${b.years}</span>
+        <span class="badge mat">${b.fuente}</span>
+        <span class="badge" style="background:${b.frenos.startsWith('Disco') ? '#0d5c46' : 'var(--line)'};color:${b.frenos.startsWith('Disco') ? '#fff' : 'var(--muted)'};">${b.frenos}</span>
+        ${bajada}
+      </div>
+      <div class="price">$${b.precio.toLocaleString()} <small>AUD pedido</small></div>
+      <p class="why">${b.why}</p>
+      <div class="fit-row"><span>Talla</span><span>${b.sizeFit}</span></div>
+      <div class="fit-row"><span>Ubicación</span><span>${b.comuna}</span></div>
+      <div class="fit-row"><span>Frenos</span><span>${b.frenos}</span></div>
+      <div class="fit-row"><span>Publicado</span><span>hace ${b.dias} ${b.dias === 1 ? 'día' : 'días'}</span></div>
+      <div class="links">
+        <a href="${b.urlAviso}" target="_blank" rel="noopener">Ver el aviso ↗</a>
+      </div>
+    `;
+    cardsEl.appendChild(card);
+  });
+}
+
+function renderSources(){
+  const el = document.getElementById("sources");
+  el.innerHTML = "";
+  sources.forEach(s=>{
+    const card = document.createElement("div");
+    card.className = "source-card";
+    card.innerHTML = `
+      <div class="sc-head"><span class="sc-name">${s.name}</span><span class="sc-tag">${s.tag}</span></div>
+      <ul>${s.links.map(l=>`<li><a href="${l.url}" target="_blank" rel="noopener">${l.label} ↗</a></li>`).join("")}</ul>
+    `;
+    el.appendChild(card);
+  });
+}
+
+makeChips(document.getElementById("brandChips"), uniq(bikes.map(b=>b.brand)), state.brands);
+makeChips(document.getElementById("matChips"), uniq(bikes.map(b=>b.material)), state.materials);
+makeChips(document.getElementById("geoChips"), ["Endurance","Carrera","Por confirmar"], state.geos);
+makeChips(document.getElementById("frenoChips"), uniq(bikes.map(b=>b.frenos)), state.frenos);
+
+const priceRange = document.getElementById("priceRange");
+const priceLabel = document.getElementById("priceLabel");
+priceRange.addEventListener("input", ()=>{
+  state.maxPrice = Number(priceRange.value);
+  priceLabel.textContent = "$" + state.maxPrice.toLocaleString();
+  render();
+});
+
+const daysRange = document.getElementById("daysRange");
+const daysLabel = document.getElementById("daysLabel");
+daysRange.addEventListener("input", ()=>{
+  state.maxDays = Number(daysRange.value);
+  daysLabel.textContent = state.maxDays + (state.maxDays === 1 ? " día" : " días");
+  render();
+});
+
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  state.brands.clear(); state.materials.clear(); state.geos.clear(); state.frenos.clear();
+  state.maxPrice = 2500;
+  state.maxDays = 25;
+  priceRange.value = 2500;
+  priceLabel.textContent = "$2.500";
+  daysRange.value = 25;
+  daysLabel.textContent = "25 días";
+  [...document.querySelectorAll(".chip")].forEach(c=>c.setAttribute("aria-pressed","false"));
+  render();
+});
+
+renderSources();
+render();
+</script>
+</body>
+</html>
